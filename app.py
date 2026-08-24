@@ -721,13 +721,26 @@ st.markdown(
                     letter-spacing:.14em; text-transform:uppercase; color:{MUTED};">
             Operations Intelligence Control Tower · Vikrant Thenge
         </div>
-        <div style="display:flex; justify-content:center; gap:22px; flex-wrap:wrap; margin-top:12px;
+        <div style="display:flex; justify-content:center; align-items:center; gap:22px; flex-wrap:wrap; margin-top:12px;
                     font-size:13px;">
-            <a href="mailto:vikrantthenge@outlook.com" style="color:{CYAN}; text-decoration:none;">Email</a>
+            <a href="mailto:vikrantthenge@outlook.com" target="_blank"
+               style="color:{CYAN}; text-decoration:none; display:flex; align-items:center; gap:6px;">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/microsoftoutlook.svg"
+                     width="16" style="vertical-align:middle; filter: invert(76%) sepia(56%) saturate(1000%) hue-rotate(140deg) brightness(95%);">
+                Email
+            </a>
             <a href="https://www.linkedin.com/in/vthenge" target="_blank"
-               style="color:{CYAN}; text-decoration:none;">LinkedIn</a>
+               style="color:{CYAN}; text-decoration:none; display:flex; align-items:center; gap:6px;">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/linkedin.svg"
+                     width="16" style="vertical-align:middle; filter: invert(76%) sepia(56%) saturate(1000%) hue-rotate(140deg) brightness(95%);">
+                LinkedIn
+            </a>
             <a href="https://github.com/Vikrantthenge/Apps" target="_blank"
-               style="color:{CYAN}; text-decoration:none;">GitHub</a>
+               style="color:{CYAN}; text-decoration:none; display:flex; align-items:center; gap:6px;">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/github.svg"
+                     width="16" style="vertical-align:middle; filter: invert(76%) sepia(56%) saturate(1000%) hue-rotate(140deg) brightness(95%);">
+                GitHub
+            </a>
         </div>
         <div style="font-size:11px; color:{MUTED}; opacity:.75; margin-top:10px;">© 2026 Vikrant Thenge</div>
     </div>
