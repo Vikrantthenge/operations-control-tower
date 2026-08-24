@@ -728,7 +728,7 @@ st.markdown(
             <a href="mailto:vikrantthenge@outlook.com"
                style="color:#0078D4; text-decoration:none;
                       display:flex; align-items:center; gap:6px;">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/microsoftoutlook.svg"
+                <img src="https://cdn.simpleicons.org/microsoftoutlook/0078D4"
                      width="16"
                      style="vertical-align:middle;">
                 Email
@@ -738,7 +738,7 @@ st.markdown(
                target="_blank"
                style="color:#0A66C2; text-decoration:none;
                       display:flex; align-items:center; gap:6px;">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/linkedin.svg"
+                <img src="https://cdn.simpleicons.org/linkedin/0A66C2"
                      width="16"
                      style="vertical-align:middle;">
                 LinkedIn
@@ -746,9 +746,9 @@ st.markdown(
 
             <a href="https://github.com/Vikrantthenge/Apps"
                target="_blank"
-               style="color:#181717; text-decoration:none;
+               style="color:#E6EDF7; text-decoration:none;
                       display:flex; align-items:center; gap:6px;">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/github.svg"
+                <img src="https://cdn.simpleicons.org/github/FFFFFF"
                      width="16"
                      style="vertical-align:middle;">
                 GitHub
