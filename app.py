@@ -32,6 +32,11 @@ SLA_SCALE = [[0.0, ROSE], [0.5, AMBER], [1.0, LIME]]
 PLOTLY_CONFIG = {"displaylogo": False, "modeBarButtonsToRemove": ["lasso2d", "select2d"]}
 
 st.markdown(
+    '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">',
+    unsafe_allow_html=True,
+)
+
+st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap');
@@ -720,14 +725,14 @@ f"""<div style="text-align:center; padding:26px 0 20px 0; border-top:1px solid {
 Operations Intelligence Control Tower · Vikrant Thenge
 </div>
 <div style="display:flex; justify-content:center; align-items:center; gap:22px; flex-wrap:wrap; margin-top:12px; font-size:13px;">
-<a href="mailto:vikrantthenge@outlook.com" style="color:#0078D4; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-<img src="https://cdn.simpleicons.org/microsoftoutlook/0078D4" width="16" style="vertical-align:middle;"> Email
+<a href="mailto:vikrantthenge@outlook.com" style="color:#0078D4; text-decoration:none; display:inline-flex; align-items:center; gap:7px;">
+<i class="fa-solid fa-envelope" style="font-size:15px;"></i> Email
 </a>
-<a href="https://www.linkedin.com/in/vthenge" target="_blank" style="color:#0A66C2; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-<img src="https://cdn.simpleicons.org/linkedin/0A66C2" width="16" style="vertical-align:middle;"> LinkedIn
+<a href="https://www.linkedin.com/in/vthenge" target="_blank" style="color:#0A66C2; text-decoration:none; display:inline-flex; align-items:center; gap:7px;">
+<i class="fa-brands fa-linkedin" style="font-size:16px;"></i> LinkedIn
 </a>
-<a href="https://github.com/Vikrantthenge/Apps" target="_blank" style="color:#E6EDF7; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-<img src="https://cdn.simpleicons.org/github/FFFFFF" width="16" style="vertical-align:middle;"> GitHub
+<a href="https://github.com/Vikrantthenge/Apps" target="_blank" style="color:#E6EDF7; text-decoration:none; display:inline-flex; align-items:center; gap:7px;">
+<i class="fa-brands fa-github" style="font-size:16px;"></i> GitHub
 </a>
 </div>
 <div style="font-size:11px; color:{MUTED}; opacity:.75; margin-top:10px;">
