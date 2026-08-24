@@ -731,7 +731,7 @@ Operations Intelligence Control Tower · Vikrant Thenge
 <a href="https://www.linkedin.com/in/vthenge" target="_blank" style="color:#0A66C2; text-decoration:none; display:inline-flex; align-items:center; gap:7px;">
 <i class="fa-brands fa-linkedin" style="font-size:16px;"></i> LinkedIn
 </a>
-<a href="https://github.com/Vikrantthenge/Apps" target="_blank" style="color:#E6EDF7; text-decoration:none; display:inline-flex; align-items:center; gap:7px;">
+<a href="https://github.com/Vikrantthenge/Apps" target="_blank" style="color:#FFFFFF; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:7px;">
 <i class="fa-brands fa-github" style="font-size:16px; color:#181717; background:#E6EDF7; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center;"></i> GitHub
 </a>
 </div>
