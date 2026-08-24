@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("Vikrant Operations Intelligence Control Tower")
+st.title("Operations Intelligence Control Tower")
 st.caption("Operational visibility, exceptions, root-cause signals and action recommendations for high-volume businesses.")
 
 with st.sidebar:
