@@ -115,21 +115,135 @@ st.markdown(
 
 
 def style_fig(fig, height=320, legend=True):
+    """
+    Apply consistent styling to all Plotly charts.
+
+    Updated to:
+    - Prevent chart title and legend overlap
+    - Add sufficient top spacing
+    - Keep legend below the title
+    - Work cleanly with the light dashboard background
+    """
+
     fig.update_layout(
         height=height,
-        margin=dict(l=10, r=10, t=34, b=10),
+
+        # Extra top margin gives title + legend enough room
+        margin=dict(
+            l=10,
+            r=10,
+            t=85,
+            b=10
+        ),
+
+        # Transparent Plotly backgrounds so the app background shows through
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter, sans-serif", color=TEXT, size=12),
-        title=dict(font=dict(size=13, color=MUTED)),
-        hoverlabel=dict(bgcolor=SURFACE, bordercolor=LINE, font_size=12),
-        showlegend=legend,
-        legend=dict(orientation="h", y=1.14, x=0, title_text=""),
-    )
-    fig.update_xaxes(gridcolor=LINE, zeroline=False, linecolor=LINE)
-    fig.update_yaxes(gridcolor=LINE, zeroline=False, linecolor=LINE)
-    return fig
 
+        # Global chart font
+        font=dict(
+            family="Inter, sans-serif",
+            color=TEXT,
+            size=12
+        ),
+
+        # Chart title
+        title=dict(
+            font=dict(
+                family="Inter, sans-serif",
+                size=14,
+                color=MUTED
+            ),
+            x=0,
+            xanchor="left",
+            y=0.98,
+            yanchor="top",
+            pad=dict(
+                b=10
+            )
+        ),
+
+        # Hover tooltip
+        hoverlabel=dict(
+            bgcolor=SURFACE,
+            bordercolor=LINE,
+            font=dict(
+                family="Inter, sans-serif",
+                color=TEXT,
+                size=12
+            )
+        ),
+
+        # Legend
+        showlegend=legend,
+
+        legend=dict(
+            orientation="h",
+
+            # Position legend below title
+            y=1.02,
+            yanchor="bottom",
+
+            x=0,
+            xanchor="left",
+
+            title_text="",
+
+            font=dict(
+                family="Inter, sans-serif",
+                size=11,
+                color=TEXT
+            ),
+
+            bgcolor="rgba(0,0,0,0)"
+        ),
+    )
+
+    # X-axis styling
+    fig.update_xaxes(
+        showgrid=True,
+        gridcolor=LINE,
+        gridwidth=1,
+
+        zeroline=False,
+
+        showline=True,
+        linecolor=LINE,
+        linewidth=1,
+
+        tickfont=dict(
+            color=MUTED,
+            size=11
+        ),
+
+        title_font=dict(
+            color=MUTED,
+            size=11
+        )
+    )
+
+    # Y-axis styling
+    fig.update_yaxes(
+        showgrid=True,
+        gridcolor=LINE,
+        gridwidth=1,
+
+        zeroline=False,
+
+        showline=False,
+
+        tickfont=dict(
+            color=MUTED,
+            size=11
+        ),
+
+        title_font=dict(
+            color=MUTED,
+            size=11
+        )
+    )
+
+    return fig
 
 def chart(fig, height=320, legend=True):
     st.plotly_chart(style_fig(fig, height, legend), use_container_width=True, config=PLOTLY_CONFIG)
