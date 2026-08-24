@@ -15,7 +15,12 @@ with st.sidebar:
     st.header("Data")
     uploaded = st.file_uploader("Upload operations CSV", type=["csv"])
     st.markdown("---")
-   
+    st.markdown("### 👤 Vikrant Thenge")
+    st.caption("Creator · Operations Analytics & Performance")
+    st.markdown("✉️ **Outlook**  \\n[vikrantthenge@outlook.com](mailto:vikrantthenge@outlook.com)")
+    st.markdown("🔵 **LinkedIn**  \\n[linkedin.com/in/vthenge](https://www.linkedin.com/in/vthenge)")
+    st.markdown("⚫ **GitHub**  \\n[github.com/Vikrantthenge/Apps](https://github.com/Vikrantthenge/Apps)")
+
 def sample_data():
     np.random.seed(7)
     days = pd.date_range("2026-08-01", periods=30, freq="D")
@@ -149,28 +154,22 @@ st.download_button(
     template.to_csv(index=False).encode("utf-8"),
     "vikrant_operations_control_tower_template.csv",
     "text/csv",
-)
 
 st.markdown("---")
 st.markdown(
     """
-    <div style="text-align:center; line-height:1.8;">
-      <strong>Vikrant Operations Intelligence Control Tower</strong><br>
-      Created by <strong>Vikrant Thenge</strong><br>
-      ✉️ <a href="mailto:vikrantthenge@outlook.com">Outlook</a>
-      &nbsp;&nbsp;|&nbsp;&nbsp;
-      🔵 <a href="https://www.linkedin.com/in/vthenge" target="_blank">LinkedIn</a>
-      &nbsp;&nbsp;|&nbsp;&nbsp;
-      ⚫ <a href="https://github.com/Vikrantthenge/Apps" target="_blank">GitHub</a>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.markdown("---")
-st.markdown(
-    """
+    <div style="text-align:center; padding: 12px 0 20px 0;">
+        <div style="font-size:14px; margin-bottom:10px;">
+            <strong>Vikrant Operations Intelligence Control Tower</strong><br>
+            Created by Vikrant Thenge
         </div>
+        <div style="display:flex; justify-content:center; align-items:center; gap:22px; flex-wrap:wrap;">
+            <a href="mailto:vikrantthenge@outlook.com" target="_blank"
+               style="text-decoration:none; color:inherit;">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/microsoftoutlook.svg"
+                     width="20" style="vertical-align:middle; margin-right:6px;">
+                Outlook
+            </a>
             <a href="https://www.linkedin.com/in/vthenge" target="_blank"
                style="text-decoration:none; color:inherit;">
                 <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/linkedin.svg"
