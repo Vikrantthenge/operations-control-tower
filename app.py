@@ -3,19 +3,23 @@ import pandas as pd
 import numpy as np
 
 st.set_page_config(
-    page_title="Operations Intelligence Control Tower",
+    page_title="Vikrant Operations Intelligence Control Tower",
     page_icon="📊",
     layout="wide",
 )
 
-st.title("Operations Intelligence Control Tower")
+st.title("Vikrant Operations Intelligence Control Tower")
 st.caption("Operational visibility, exceptions, root-cause signals and action recommendations for high-volume businesses.")
 
 with st.sidebar:
     st.header("Data")
     uploaded = st.file_uploader("Upload operations CSV", type=["csv"])
     st.markdown("---")
-    st.caption("Created by Vikrant Thenge")
+    st.markdown("### 👤 Vikrant Thenge")
+    st.caption("Creator · Operations Analytics & Performance")
+    st.markdown("✉️ **Outlook**  \\n[vikrantthenge@outlook.com](mailto:vikrantthenge@outlook.com)")
+    st.markdown("🔵 **LinkedIn**  \\n[linkedin.com/in/vthenge](https://www.linkedin.com/in/vthenge)")
+    st.markdown("⚫ **GitHub**  \\n[github.com/Vikrantthenge/Apps](https://github.com/Vikrantthenge/Apps)")
 
 def sample_data():
     np.random.seed(7)
@@ -152,4 +156,54 @@ st.download_button(
     "text/csv",
 )
 
-st.caption("Vikrant Operations Intelligence Control Tower · Created by Vikrant Thenge")
+st.markdown("---")
+st.markdown(
+    """
+    <div style="text-align:center; line-height:1.8;">
+      <strong>Vikrant Operations Intelligence Control Tower</strong><br>
+      Created by <strong>Vikrant Thenge</strong><br>
+      ✉️ <a href="mailto:vikrantthenge@outlook.com">Outlook</a>
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      🔵 <a href="https://www.linkedin.com/in/vthenge" target="_blank">LinkedIn</a>
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      ⚫ <a href="https://github.com/Vikrantthenge/Apps" target="_blank">GitHub</a>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown("---")
+st.markdown(
+    """
+    <div style="text-align:center; padding: 12px 0 20px 0;">
+        <div style="font-size:14px; margin-bottom:10px;">
+            <strong>Vikrant Operations Intelligence Control Tower</strong><br>
+            Created by Vikrant Thenge
+        </div>
+        <div style="display:flex; justify-content:center; align-items:center; gap:22px; flex-wrap:wrap;">
+            <a href="mailto:vikrantthenge@outlook.com" target="_blank"
+               style="text-decoration:none; color:inherit;">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/microsoftoutlook.svg"
+                     width="20" style="vertical-align:middle; margin-right:6px;">
+                Outlook
+            </a>
+            <a href="https://www.linkedin.com/in/vthenge" target="_blank"
+               style="text-decoration:none; color:inherit;">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/linkedin.svg"
+                     width="20" style="vertical-align:middle; margin-right:6px;">
+                LinkedIn
+            </a>
+            <a href="https://github.com/Vikrantthenge/Apps" target="_blank"
+               style="text-decoration:none; color:inherit;">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/github.svg"
+                     width="20" style="vertical-align:middle; margin-right:6px;">
+                GitHub
+            </a>
+        </div>
+        <div style="font-size:12px; opacity:0.7; margin-top:10px;">
+            © 2026 Vikrant Thenge
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
