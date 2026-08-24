@@ -196,8 +196,8 @@ def sample_data():
 
 
 APP_DIR = Path(__file__).resolve().parent
-LOGISTICS_DEMO = APP_DIR / "Vikrant_Operations_Control_Tower_12000_Rows.xlsx"
-SERVICE_DEMO = APP_DIR / "Vikrant_Service_Operations_Demo_10000_Rows.xlsx"
+LOGISTICS_DEMO = APP_DIR / "sample.xlsx"
+SERVICE_DEMO = APP_DIR / "sample 2.xlsx"
 
 
 @st.cache_data(show_spinner=False)
