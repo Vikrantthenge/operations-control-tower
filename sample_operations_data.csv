@@ -1,0 +1,4 @@
+date,site,vendor,volume,capacity,sla_pct,backlog,overtime_hours,operating_cost
+2026-08-20,Hub A,Vendor X,1100,1050,93.5,120,28,68200
+2026-08-20,Hub B,Vendor Y,980,1100,97.2,35,12,59500
+2026-08-20,Hub C,Vendor Z,1320,1180,89.8,260,41,84200
