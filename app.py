@@ -715,51 +715,24 @@ with tab_data:
 # FOOTER
 # =============================================================
 st.markdown(
-    f"""
-    <div style="text-align:center; padding:26px 0 20px 0; border-top:1px solid {LINE}; margin-top:28px;">
-        <div style="font-family:'JetBrains Mono',monospace; font-size:12px;
-                    letter-spacing:.14em; text-transform:uppercase; color:{MUTED};">
-            Operations Intelligence Control Tower · Vikrant Thenge
-        </div>
-
-        <div style="display:flex; justify-content:center; align-items:center;
-                    gap:22px; flex-wrap:wrap; margin-top:12px; font-size:13px;">
-
-            <a href="mailto:vikrantthenge@outlook.com"
-               style="color:#0078D4; text-decoration:none;
-                      display:flex; align-items:center; gap:6px;">
-                <img src="https://cdn.simpleicons.org/microsoftoutlook/0078D4"
-                     width="16"
-                     style="vertical-align:middle;">
-                Email
-            </a>
-
-            <a href="https://www.linkedin.com/in/vthenge"
-               target="_blank"
-               style="color:#0A66C2; text-decoration:none;
-                      display:flex; align-items:center; gap:6px;">
-                <img src="https://cdn.simpleicons.org/linkedin/0A66C2"
-                     width="16"
-                     style="vertical-align:middle;">
-                LinkedIn
-            </a>
-
-            <a href="https://github.com/Vikrantthenge/Apps"
-               target="_blank"
-               style="color:#E6EDF7; text-decoration:none;
-                      display:flex; align-items:center; gap:6px;">
-                <img src="https://cdn.simpleicons.org/github/FFFFFF"
-                     width="16"
-                     style="vertical-align:middle;">
-                GitHub
-            </a>
-
-        </div>
-
-        <div style="font-size:11px; color:{MUTED}; opacity:.75; margin-top:10px;">
-            © 2026 Vikrant Thenge
-        </div>
-    </div>
-    """,
+f"""<div style="text-align:center; padding:26px 0 20px 0; border-top:1px solid {LINE}; margin-top:28px;">
+<div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:{MUTED};">
+Operations Intelligence Control Tower · Vikrant Thenge
+</div>
+<div style="display:flex; justify-content:center; align-items:center; gap:22px; flex-wrap:wrap; margin-top:12px; font-size:13px;">
+<a href="mailto:vikrantthenge@outlook.com" style="color:#0078D4; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+<img src="https://cdn.simpleicons.org/microsoftoutlook/0078D4" width="16" style="vertical-align:middle;"> Email
+</a>
+<a href="https://www.linkedin.com/in/vthenge" target="_blank" style="color:#0A66C2; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+<img src="https://cdn.simpleicons.org/linkedin/0A66C2" width="16" style="vertical-align:middle;"> LinkedIn
+</a>
+<a href="https://github.com/Vikrantthenge/Apps" target="_blank" style="color:#E6EDF7; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+<img src="https://cdn.simpleicons.org/github/FFFFFF" width="16" style="vertical-align:middle;"> GitHub
+</a>
+</div>
+<div style="font-size:11px; color:{MUTED}; opacity:.75; margin-top:10px;">
+© 2026 Vikrant Thenge
+</div>
+</div>""",
     unsafe_allow_html=True,
 )
