@@ -486,7 +486,7 @@ with tab_cause:
             textposition="outside", textfont_color=TEXT,
             hovertemplate="%{y}<br>Avg SLA %{x:.1f}%<extra></extra>",
         )
-        fig.add_vline(y=None, x=sla_target, line=dict(color=ROSE, width=1, dash="dash"))
+        fig.add_vline(x=sla_target, line_color=ROSE, line_width=1, line_dash="dash")
         fig.update_layout(
             title="Average SLA by site", coloraxis_showscale=False,
             xaxis_title="", yaxis_title="",
@@ -504,7 +504,7 @@ with tab_cause:
             textposition="outside", textfont_color=TEXT,
             hovertemplate="%{y}<br>Avg SLA %{x:.1f}%<br>Cost ₹%{marker.color:,.1f}<extra></extra>",
         )
-        fig.add_vline(x=sla_target, line=dict(color=ROSE, width=1, dash="dash"))
+        fig.add_vline(x=sla_target, line_color=ROSE, line_width=1, line_dash="dash")
         fig.update_layout(
             title="Vendor SLA, shaded by cost per unit", xaxis_title="", yaxis_title=""
         )
@@ -517,8 +517,8 @@ with tab_cause:
             color_discrete_sequence=SITE_SEQ, size_max=20, opacity=0.8,
             hover_data={"date": "|%d %b", "backlog": ":,.0f", "volume": ":,.0f"},
         )
-        fig.add_vline(x=util_limit, line=dict(color=VIOLET, width=1, dash="dash"))
-        fig.add_hline(y=sla_target, line=dict(color=ROSE, width=1, dash="dash"))
+        fig.add_vline(x=util_limit, line_color=VIOLET, line_width=1, line_dash="dash")
+        fig.add_hline(y=sla_target, line_color=ROSE, line_width=1, line_dash="dash")
         fig.update_layout(
             title="Does load explain the misses? Each dot is one site-day",
             xaxis_title="Utilisation %", yaxis_title="SLA %",
