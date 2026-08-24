@@ -582,80 +582,36 @@ st.download_button(
 # FOOTER
 # -----------------------------
 st.markdown("---")
-
 st.markdown(
     """
-    <div style="
-        text-align:center;
-        padding:18px 0 24px 0;
-    ">
-
-        <div style="
-            font-size:16px;
-            margin-bottom:12px;
-        ">
-            <strong>
-                Vikrant Operations Intelligence Control Tower
-            </strong>
-            <br>
-            <span style="
-                font-size:13px;
-                opacity:0.8;
-            ">
-                Created by Vikrant Thenge
-            </span>
+    <div style="text-align:center; padding: 12px 0 20px 0;">
+        <div style="font-size:14px; margin-bottom:10px;">
+            <strong>Vikrant Operations Intelligence Control Tower</strong><br>
+            Created by Vikrant Thenge
         </div>
-
-        <div style="
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            gap:24px;
-            flex-wrap:wrap;
-        ">
-
-            <a
-                href="mailto:vikrantthenge@outlook.com"
-                style="
-                    text-decoration:none;
-                    color:inherit;
-                "
-            >
-                ✉️ Outlook
+        <div style="display:flex; justify-content:center; align-items:center; gap:22px; flex-wrap:wrap;">
+            <a href="mailto:vikrantthenge@outlook.com" target="_blank"
+               style="text-decoration:none; color:inherit;">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/microsoftoutlook.svg"
+                     width="20" style="vertical-align:middle; margin-right:6px;">
+                Outlook
             </a>
-
-            <a
-                href="https://www.linkedin.com/in/vthenge"
-                target="_blank"
-                style="
-                    text-decoration:none;
-                    color:inherit;
-                "
-            >
-                🔵 LinkedIn
+            <a href="https://www.linkedin.com/in/vthenge" target="_blank"
+               style="text-decoration:none; color:inherit;">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/linkedin.svg"
+                     width="20" style="vertical-align:middle; margin-right:6px;">
+                LinkedIn
             </a>
-
-            <a
-                href="https://github.com/Vikrantthenge/Apps"
-                target="_blank"
-                style="
-                    text-decoration:none;
-                    color:inherit;
-                "
-            >
-                ⚫ GitHub
+            <a href="https://github.com/Vikrantthenge/Apps" target="_blank"
+               style="text-decoration:none; color:inherit;">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/github.svg"
+                     width="20" style="vertical-align:middle; margin-right:6px;">
+                GitHub
             </a>
-
         </div>
-
-        <div style="
-            font-size:12px;
-            opacity:0.65;
-            margin-top:12px;
-        ">
+        <div style="font-size:12px; opacity:0.7; margin-top:10px;">
             © 2026 Vikrant Thenge
         </div>
-
     </div>
     """,
     unsafe_allow_html=True,
