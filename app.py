@@ -14,11 +14,11 @@ st.set_page_config(
 # =============================================================
 # THEME
 # =============================================================
-INK = "#0B1220"
-SURFACE = "#131C2E"
-LINE = "#22304A"
-TEXT = "#E6EDF7"
-MUTED = "#8CA0BF"
+INK = "#FFFFFF"
+SURFACE = "#FFFFFF"
+LINE = "#D9E2EC"
+TEXT = "#0B1220"
+MUTED = "#5B6B82"
 
 CYAN = "#22D3EE"
 LIME = "#A3E635"
@@ -44,44 +44,51 @@ st.markdown(
     html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
     .stApp, body, .main {
-        background-color: #0B1220;
-        color: #E6EDF7;
+        background-color: #FFFFFF;
+        color: #0B1220;
     }
 
     .block-container { padding-top: 2.2rem; max-width: 1500px; }
 
+    [data-testid="stSidebar"] {
+        background-color: #F7F9FC;
+        color: #0B1220;
+    }
+
+    [data-testid="stSidebar"] * { color: #0B1220; }
+
     .board-title {
         font-family: 'JetBrains Mono', monospace;
         font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
-        color: #8CA0BF; margin: 0 0 10px 2px;
+        color: #5B6B82; margin: 0 0 10px 2px;
     }
 
     /* KPI tiles */
     .kpi {
-        background: linear-gradient(160deg, #131C2E 0%, #0E1626 100%);
-        border: 1px solid #22304A; border-left: 3px solid var(--accent);
+        background: #FFFFFF;
+        border: 1px solid #D9E2EC; border-left: 3px solid var(--accent);
         border-radius: 10px; padding: 14px 16px; height: 116px;
     }
     .kpi-label {
         font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
-        letter-spacing: .16em; text-transform: uppercase; color: #8CA0BF;
+        letter-spacing: .16em; text-transform: uppercase; color: #5B6B82;
     }
     .kpi-value {
         font-family: 'JetBrains Mono', monospace; font-weight: 700;
-        font-size: 30px; line-height: 1.25; color: #E6EDF7; margin-top: 4px;
+        font-size: 30px; line-height: 1.25; color: #0B1220; margin-top: 4px;
     }
     .kpi-delta { font-size: 12px; font-weight: 500; margin-top: 2px; }
 
     /* Site status board — one row per site */
     .row {
         display: flex; align-items: center; gap: 14px;
-        background: #131C2E; border: 1px solid #22304A;
+        background: #131C2E; border: 1px solid #D9E2EC;
         border-left: 4px solid var(--accent);
         border-radius: 8px; padding: 11px 16px; margin-bottom: 8px;
     }
     .row-site {
         font-family: 'JetBrains Mono', monospace; font-weight: 700;
-        font-size: 15px; color: #E6EDF7; min-width: 110px;
+        font-size: 15px; color: #0B1220; min-width: 110px;
     }
     .chip {
         font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
@@ -89,14 +96,14 @@ st.markdown(
         background: color-mix(in srgb, var(--accent) 18%, transparent);
         color: var(--accent); border: 1px solid var(--accent); white-space: nowrap;
     }
-    .row-metric { font-size: 12.5px; color: #8CA0BF; min-width: 128px; }
+    .row-metric { font-size: 12.5px; color: #5B6B82; min-width: 128px; }
     .row-metric b {
-        font-family: 'JetBrains Mono', monospace; color: #E6EDF7;
+        font-family: 'JetBrains Mono', monospace; color: #0B1220;
         font-size: 14px; margin-left: 5px;
     }
     .bar-track {
         flex: 1; height: 8px; border-radius: 999px;
-        background: #1D2942; overflow: hidden; min-width: 90px;
+        background: #E9EEF5; overflow: hidden; min-width: 90px;
     }
     .bar-fill { height: 8px; border-radius: 999px; background: var(--accent); }
 
