@@ -9,183 +9,653 @@ st.set_page_config(
 )
 
 st.title("Operations Intelligence Control Tower")
-st.caption("Operational visibility, exceptions, root-cause signals and action recommendations for high-volume businesses.")
+st.caption(
+    "Operational visibility, exceptions, root-cause signals and action "
+    "recommendations for high-volume businesses."
+)
 
+# -----------------------------
+# SIDEBAR
+# -----------------------------
 with st.sidebar:
     st.header("Data")
-    uploaded = st.file_uploader("Upload operations CSV", type=["csv"])
-    st.markdown("---")
-    st.markdown("### 👤 Vikrant Thenge")
-    st.caption("Creator · Operations Analytics & Performance")
-    st.markdown("✉️ **Outlook**  \\n[vikrantthenge@outlook.com](mailto:vikrantthenge@outlook.com)")
-    st.markdown("🔵 **LinkedIn**  \\n[linkedin.com/in/vthenge](https://www.linkedin.com/in/vthenge)")
-    st.markdown("⚫ **GitHub**  \\n[github.com/Vikrantthenge/Apps](https://github.com/Vikrantthenge/Apps)")
 
+    uploaded = st.file_uploader(
+        "Upload operations CSV",
+        type=["csv"]
+    )
+
+
+# -----------------------------
+# SAMPLE DATA
+# -----------------------------
 def sample_data():
     np.random.seed(7)
-    days = pd.date_range("2026-08-01", periods=30, freq="D")
+
+    days = pd.date_range(
+        "2026-08-01",
+        periods=30,
+        freq="D"
+    )
+
     rows = []
-    sites = ["Hub A", "Hub B", "Hub C"]
-    vendors = ["Vendor X", "Vendor Y", "Vendor Z"]
+
+    sites = [
+        "Hub A",
+        "Hub B",
+        "Hub C"
+    ]
+
+    vendors = [
+        "Vendor X",
+        "Vendor Y",
+        "Vendor Z"
+    ]
+
     for d in days:
         for site in sites:
-            volume = np.random.randint(700, 1400)
-            capacity = np.random.randint(850, 1300)
-            sla = np.clip(np.random.normal(94, 4), 75, 100)
-            backlog = max(0, int(volume - capacity + np.random.randint(-80, 120)))
-            overtime = max(0, np.random.normal(22, 10))
-            cost = volume * np.random.uniform(52, 68) + overtime * 450
-            vendor = np.random.choice(vendors)
-            rows.append([d, site, vendor, volume, capacity, sla, backlog, overtime, cost])
-    return pd.DataFrame(rows, columns=[
-        "date","site","vendor","volume","capacity","sla_pct","backlog","overtime_hours","operating_cost"
-    ])
 
+            volume = np.random.randint(
+                700,
+                1400
+            )
+
+            capacity = np.random.randint(
+                850,
+                1300
+            )
+
+            sla = np.clip(
+                np.random.normal(94, 4),
+                75,
+                100
+            )
+
+            backlog = max(
+                0,
+                int(
+                    volume
+                    - capacity
+                    + np.random.randint(-80, 120)
+                )
+            )
+
+            overtime = max(
+                0,
+                np.random.normal(22, 10)
+            )
+
+            cost = (
+                volume
+                * np.random.uniform(52, 68)
+                + overtime * 450
+            )
+
+            vendor = np.random.choice(
+                vendors
+            )
+
+            rows.append(
+                [
+                    d,
+                    site,
+                    vendor,
+                    volume,
+                    capacity,
+                    sla,
+                    backlog,
+                    overtime,
+                    cost,
+                ]
+            )
+
+    return pd.DataFrame(
+        rows,
+        columns=[
+            "date",
+            "site",
+            "vendor",
+            "volume",
+            "capacity",
+            "sla_pct",
+            "backlog",
+            "overtime_hours",
+            "operating_cost",
+        ],
+    )
+
+
+# -----------------------------
+# LOAD DATA
+# -----------------------------
 if uploaded:
-    df = pd.read_csv(uploaded)
-    if "date" in df.columns:
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
-else:
-    df = sample_data()
-    st.info("Showing demo data. Upload a CSV using the same template to analyze your own operations.")
 
-required = {"date","site","vendor","volume","capacity","sla_pct","backlog","overtime_hours","operating_cost"}
+    df = pd.read_csv(uploaded)
+
+    if "date" in df.columns:
+        df["date"] = pd.to_datetime(
+            df["date"],
+            errors="coerce"
+        )
+
+else:
+
+    df = sample_data()
+
+    st.info(
+        "Showing demo data. Upload a CSV using the same "
+        "template to analyze your own operations."
+    )
+
+
+# -----------------------------
+# VALIDATE DATA
+# -----------------------------
+required = {
+    "date",
+    "site",
+    "vendor",
+    "volume",
+    "capacity",
+    "sla_pct",
+    "backlog",
+    "overtime_hours",
+    "operating_cost",
+}
+
 missing = required - set(df.columns)
+
 if missing:
-    st.error(f"Missing required columns: {', '.join(sorted(missing))}")
+
+    st.error(
+        "Missing required columns: "
+        + ", ".join(sorted(missing))
+    )
+
     st.stop()
 
-df["utilization_pct"] = np.where(df["capacity"] > 0, df["volume"] / df["capacity"] * 100, np.nan)
-df["cost_per_unit"] = np.where(df["volume"] > 0, df["operating_cost"] / df["volume"], np.nan)
-df["sla_breach"] = df["sla_pct"] < 95
-df["capacity_risk"] = df["utilization_pct"] > 100
 
+# -----------------------------
+# DERIVED METRICS
+# -----------------------------
+df["utilization_pct"] = np.where(
+    df["capacity"] > 0,
+    df["volume"]
+    / df["capacity"]
+    * 100,
+    np.nan,
+)
+
+df["cost_per_unit"] = np.where(
+    df["volume"] > 0,
+    df["operating_cost"]
+    / df["volume"],
+    np.nan,
+)
+
+df["sla_breach"] = (
+    df["sla_pct"] < 95
+)
+
+df["capacity_risk"] = (
+    df["utilization_pct"] > 100
+)
+
+
+# -----------------------------
+# LATEST PERIOD
+# -----------------------------
 latest_date = df["date"].max()
-latest = df[df["date"] == latest_date].copy()
 
-st.subheader(f"Executive Snapshot · {latest_date.date() if pd.notna(latest_date) else 'Latest'}")
+latest = df[
+    df["date"] == latest_date
+].copy()
+
+
+# -----------------------------
+# EXECUTIVE SNAPSHOT
+# -----------------------------
+st.subheader(
+    f"Executive Snapshot · "
+    f"{latest_date.date() if pd.notna(latest_date) else 'Latest'}"
+)
+
 c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("Volume", f"{latest['volume'].sum():,.0f}")
-c2.metric("Capacity", f"{latest['capacity'].sum():,.0f}")
-c3.metric("Avg SLA", f"{latest['sla_pct'].mean():.1f}%")
-c4.metric("Backlog", f"{latest['backlog'].sum():,.0f}")
-c5.metric("Cost / Unit", f"₹{latest['cost_per_unit'].mean():,.1f}")
 
+c1.metric(
+    "Volume",
+    f"{latest['volume'].sum():,.0f}"
+)
+
+c2.metric(
+    "Capacity",
+    f"{latest['capacity'].sum():,.0f}"
+)
+
+c3.metric(
+    "Avg SLA",
+    f"{latest['sla_pct'].mean():.1f}%"
+)
+
+c4.metric(
+    "Backlog",
+    f"{latest['backlog'].sum():,.0f}"
+)
+
+c5.metric(
+    "Cost / Unit",
+    f"₹{latest['cost_per_unit'].mean():,.1f}"
+)
+
+
+# -----------------------------
+# PERFORMANCE + EXCEPTIONS
+# -----------------------------
 st.markdown("---")
-left, right = st.columns([1.25, 1])
+
+left, right = st.columns(
+    [1.25, 1]
+)
 
 with left:
-    st.subheader("Performance Trend")
-    trend = df.groupby("date", as_index=False).agg(
-        volume=("volume","sum"),
-        capacity=("capacity","sum"),
-        sla_pct=("sla_pct","mean"),
-        backlog=("backlog","sum"),
-        operating_cost=("operating_cost","sum"),
+
+    st.subheader(
+        "Performance Trend"
     )
-    st.line_chart(trend.set_index("date")[["volume","capacity"]], height=260)
-    st.line_chart(trend.set_index("date")[["sla_pct"]], height=220)
+
+    trend = (
+        df.groupby(
+            "date",
+            as_index=False
+        )
+        .agg(
+            volume=(
+                "volume",
+                "sum"
+            ),
+            capacity=(
+                "capacity",
+                "sum"
+            ),
+            sla_pct=(
+                "sla_pct",
+                "mean"
+            ),
+            backlog=(
+                "backlog",
+                "sum"
+            ),
+            operating_cost=(
+                "operating_cost",
+                "sum"
+            ),
+        )
+    )
+
+    st.line_chart(
+        trend
+        .set_index("date")[
+            ["volume", "capacity"]
+        ],
+        height=260,
+    )
+
+    st.line_chart(
+        trend
+        .set_index("date")[
+            ["sla_pct"]
+        ],
+        height=220,
+    )
+
 
 with right:
-    st.subheader("Exceptions Requiring Attention")
-    exceptions = latest[(latest["sla_breach"]) | (latest["capacity_risk"]) | (latest["backlog"] > 100)].copy()
-    if exceptions.empty:
-        st.success("No critical exceptions detected in the latest period.")
-    else:
-        exceptions["priority"] = np.select(
-            [
-                (exceptions["sla_pct"] < 90) | (exceptions["backlog"] > 250),
-                (exceptions["sla_pct"] < 95) | (exceptions["utilization_pct"] > 105),
-            ],
-            ["Critical","High"],
-            default="Medium"
-        )
-        show = exceptions[["priority","site","vendor","sla_pct","utilization_pct","backlog","overtime_hours"]]
-        st.dataframe(show.sort_values(["priority","backlog"], ascending=[True,False]), use_container_width=True, hide_index=True)
 
+    st.subheader(
+        "Exceptions Requiring Attention"
+    )
+
+    exceptions = latest[
+        (
+            latest["sla_breach"]
+        )
+        |
+        (
+            latest["capacity_risk"]
+        )
+        |
+        (
+            latest["backlog"] > 100
+        )
+    ].copy()
+
+    if exceptions.empty:
+
+        st.success(
+            "No critical exceptions detected "
+            "in the latest period."
+        )
+
+    else:
+
+        exceptions["priority"] = (
+            np.select(
+                [
+                    (
+                        exceptions["sla_pct"] < 90
+                    )
+                    |
+                    (
+                        exceptions["backlog"] > 250
+                    ),
+                    (
+                        exceptions["sla_pct"] < 95
+                    )
+                    |
+                    (
+                        exceptions["utilization_pct"] > 105
+                    ),
+                ],
+                [
+                    "Critical",
+                    "High",
+                ],
+                default="Medium",
+            )
+        )
+
+        show = exceptions[
+            [
+                "priority",
+                "site",
+                "vendor",
+                "sla_pct",
+                "utilization_pct",
+                "backlog",
+                "overtime_hours",
+            ]
+        ]
+
+        st.dataframe(
+            show.sort_values(
+                [
+                    "priority",
+                    "backlog"
+                ],
+                ascending=[
+                    True,
+                    False
+                ],
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
+
+
+# -----------------------------
+# ROOT CAUSE ANALYSIS
+# -----------------------------
 st.markdown("---")
-st.subheader("Root-Cause Signals")
+
+st.subheader(
+    "Root-Cause Signals"
+)
+
 rc1, rc2 = st.columns(2)
+
+
 with rc1:
-    site_perf = df.groupby("site", as_index=False).agg(
-        avg_sla=("sla_pct","mean"),
-        avg_utilization=("utilization_pct","mean"),
-        total_backlog=("backlog","sum"),
-        avg_cost_per_unit=("cost_per_unit","mean")
-    ).sort_values("avg_sla")
-    st.write("Site performance")
-    st.dataframe(site_perf, use_container_width=True, hide_index=True)
+
+    site_perf = (
+        df.groupby(
+            "site",
+            as_index=False
+        )
+        .agg(
+            avg_sla=(
+                "sla_pct",
+                "mean"
+            ),
+            avg_utilization=(
+                "utilization_pct",
+                "mean"
+            ),
+            total_backlog=(
+                "backlog",
+                "sum"
+            ),
+            avg_cost_per_unit=(
+                "cost_per_unit",
+                "mean"
+            ),
+        )
+        .sort_values(
+            "avg_sla"
+        )
+    )
+
+    st.write(
+        "Site performance"
+    )
+
+    st.dataframe(
+        site_perf,
+        use_container_width=True,
+        hide_index=True,
+    )
+
 
 with rc2:
-    vendor_perf = df.groupby("vendor", as_index=False).agg(
-        avg_sla=("sla_pct","mean"),
-        total_backlog=("backlog","sum"),
-        avg_cost_per_unit=("cost_per_unit","mean")
-    ).sort_values("avg_sla")
-    st.write("Vendor performance")
-    st.dataframe(vendor_perf, use_container_width=True, hide_index=True)
 
+    vendor_perf = (
+        df.groupby(
+            "vendor",
+            as_index=False
+        )
+        .agg(
+            avg_sla=(
+                "sla_pct",
+                "mean"
+            ),
+            total_backlog=(
+                "backlog",
+                "sum"
+            ),
+            avg_cost_per_unit=(
+                "cost_per_unit",
+                "mean"
+            ),
+        )
+        .sort_values(
+            "avg_sla"
+        )
+    )
+
+    st.write(
+        "Vendor performance"
+    )
+
+    st.dataframe(
+        vendor_perf,
+        use_container_width=True,
+        hide_index=True,
+    )
+
+
+# -----------------------------
+# RECOMMENDED ACTIONS
+# -----------------------------
 st.markdown("---")
-st.subheader("Recommended Actions")
+
+st.subheader(
+    "Recommended Actions"
+)
+
 actions = []
+
 for _, r in latest.iterrows():
+
     if r["sla_pct"] < 90:
-        actions.append(f"**{r['site']}**: SLA is {r['sla_pct']:.1f}%. Run immediate exception review by process stage and vendor.")
+
+        actions.append(
+            f"**{r['site']}**: SLA is "
+            f"{r['sla_pct']:.1f}%. "
+            "Run immediate exception review "
+            "by process stage and vendor."
+        )
+
     elif r["sla_pct"] < 95:
-        actions.append(f"**{r['site']}**: SLA below target at {r['sla_pct']:.1f}%. Check backlog ageing and staffing coverage.")
+
+        actions.append(
+            f"**{r['site']}**: SLA below target "
+            f"at {r['sla_pct']:.1f}%. "
+            "Check backlog ageing and staffing coverage."
+        )
+
     if r["utilization_pct"] > 105:
-        actions.append(f"**{r['site']}**: Demand is {r['utilization_pct']:.1f}% of capacity. Add temporary capacity or rebalance workload.")
+
+        actions.append(
+            f"**{r['site']}**: Demand is "
+            f"{r['utilization_pct']:.1f}% "
+            "of capacity. Add temporary capacity "
+            "or rebalance workload."
+        )
+
     if r["backlog"] > 200:
-        actions.append(f"**{r['site']}**: Backlog at {int(r['backlog'])}. Prioritize oldest/highest-value work and review cut-off rules.")
+
+        actions.append(
+            f"**{r['site']}**: Backlog at "
+            f"{int(r['backlog'])}. "
+            "Prioritize oldest/highest-value work "
+            "and review cut-off rules."
+        )
+
     if r["overtime_hours"] > 35:
-        actions.append(f"**{r['site']}**: Overtime is elevated at {r['overtime_hours']:.1f} hours. Compare roster coverage to hourly demand.")
+
+        actions.append(
+            f"**{r['site']}**: Overtime is elevated "
+            f"at {r['overtime_hours']:.1f} hours. "
+            "Compare roster coverage to hourly demand."
+        )
+
 
 if actions:
+
     for a in actions[:10]:
-        st.markdown(f"- {a}")
+
+        st.markdown(
+            f"- {a}"
+        )
+
 else:
-    st.success("No immediate management interventions suggested from the latest data.")
 
+    st.success(
+        "No immediate management interventions "
+        "suggested from the latest data."
+    )
+
+
+# -----------------------------
+# DATA TEMPLATE
+# -----------------------------
 st.markdown("---")
-st.subheader("Data Template")
-template = pd.DataFrame(columns=sorted(required))
+
+st.subheader(
+    "Data Template"
+)
+
+template = pd.DataFrame(
+    columns=sorted(required)
+)
+
 st.download_button(
-    "Download CSV template",
-    template.to_csv(index=False).encode("utf-8"),
-    "vikrant_operations_control_tower_template.csv",
-    "text/csv",
+    label="Download CSV template",
+    data=template
+    .to_csv(index=False)
+    .encode("utf-8"),
+    file_name="vikrant_operations_control_tower_template.csv",
+    mime="text/csv",
+)
 
+
+# -----------------------------
+# FOOTER
+# -----------------------------
 st.markdown("---")
+
 st.markdown(
     """
-    <div style="text-align:center; padding: 12px 0 20px 0;">
-        <div style="font-size:14px; margin-bottom:10px;">
-            <strong>Vikrant Operations Intelligence Control Tower</strong><br>
-            Created by Vikrant Thenge
+    <div style="
+        text-align:center;
+        padding:18px 0 24px 0;
+    ">
+
+        <div style="
+            font-size:16px;
+            margin-bottom:12px;
+        ">
+            <strong>
+                Vikrant Operations Intelligence Control Tower
+            </strong>
+            <br>
+            <span style="
+                font-size:13px;
+                opacity:0.8;
+            ">
+                Created by Vikrant Thenge
+            </span>
         </div>
-        <div style="display:flex; justify-content:center; align-items:center; gap:22px; flex-wrap:wrap;">
-            <a href="mailto:vikrantthenge@outlook.com" target="_blank"
-               style="text-decoration:none; color:inherit;">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/microsoftoutlook.svg"
-                     width="20" style="vertical-align:middle; margin-right:6px;">
-                Outlook
+
+        <div style="
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:24px;
+            flex-wrap:wrap;
+        ">
+
+            <a
+                href="mailto:vikrantthenge@outlook.com"
+                style="
+                    text-decoration:none;
+                    color:inherit;
+                "
+            >
+                ✉️ Outlook
             </a>
-            <a href="https://www.linkedin.com/in/vthenge" target="_blank"
-               style="text-decoration:none; color:inherit;">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/linkedin.svg"
-                     width="20" style="vertical-align:middle; margin-right:6px;">
-                LinkedIn
+
+            <a
+                href="https://www.linkedin.com/in/vthenge"
+                target="_blank"
+                style="
+                    text-decoration:none;
+                    color:inherit;
+                "
+            >
+                🔵 LinkedIn
             </a>
-            <a href="https://github.com/Vikrantthenge/Apps" target="_blank"
-               style="text-decoration:none; color:inherit;">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/github.svg"
-                     width="20" style="vertical-align:middle; margin-right:6px;">
-                GitHub
+
+            <a
+                href="https://github.com/Vikrantthenge/Apps"
+                target="_blank"
+                style="
+                    text-decoration:none;
+                    color:inherit;
+                "
+            >
+                ⚫ GitHub
             </a>
+
         </div>
-        <div style="font-size:12px; opacity:0.7; margin-top:10px;">
+
+        <div style="
+            font-size:12px;
+            opacity:0.65;
+            margin-top:12px;
+        ">
             © 2026 Vikrant Thenge
         </div>
+
     </div>
     """,
     unsafe_allow_html=True,
