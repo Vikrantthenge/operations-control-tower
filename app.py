@@ -43,6 +43,11 @@ st.markdown(
 
     html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
+    .stApp, body, .main {
+        background-color: #0B1220;
+        color: #E6EDF7;
+    }
+
     .block-container { padding-top: 2.2rem; max-width: 1500px; }
 
     .board-title {
