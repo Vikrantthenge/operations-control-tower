@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from pathlib import Path
 
 st.set_page_config(
     page_title="Operations Intelligence Control Tower",
@@ -115,135 +116,21 @@ st.markdown(
 
 
 def style_fig(fig, height=320, legend=True):
-    """
-    Apply consistent styling to all Plotly charts.
-
-    Updated to:
-    - Prevent chart title and legend overlap
-    - Add sufficient top spacing
-    - Keep legend below the title
-    - Work cleanly with the light dashboard background
-    """
-
     fig.update_layout(
         height=height,
-
-        # Extra top margin gives title + legend enough room
-        margin=dict(
-            l=10,
-            r=10,
-            t=85,
-            b=10
-        ),
-
-        # Transparent Plotly backgrounds so the app background shows through
+        margin=dict(l=10, r=10, t=34, b=10),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-
-        # Global chart font
-        font=dict(
-            family="Inter, sans-serif",
-            color=TEXT,
-            size=12
-        ),
-
-        # Chart title
-        title=dict(
-            font=dict(
-                family="Inter, sans-serif",
-                size=14,
-                color=MUTED
-            ),
-            x=0,
-            xanchor="left",
-            y=0.98,
-            yanchor="top",
-            pad=dict(
-                b=10
-            )
-        ),
-
-        # Hover tooltip
-        hoverlabel=dict(
-            bgcolor=SURFACE,
-            bordercolor=LINE,
-            font=dict(
-                family="Inter, sans-serif",
-                color=TEXT,
-                size=12
-            )
-        ),
-
-        # Legend
+        font=dict(family="Inter, sans-serif", color=TEXT, size=12),
+        title=dict(font=dict(size=13, color=MUTED)),
+        hoverlabel=dict(bgcolor=SURFACE, bordercolor=LINE, font_size=12),
         showlegend=legend,
-
-        legend=dict(
-            orientation="h",
-
-            # Position legend below title
-            y=1.02,
-            yanchor="bottom",
-
-            x=0,
-            xanchor="left",
-
-            title_text="",
-
-            font=dict(
-                family="Inter, sans-serif",
-                size=11,
-                color=TEXT
-            ),
-
-            bgcolor="rgba(0,0,0,0)"
-        ),
+        legend=dict(orientation="h", y=1.14, x=0, title_text=""),
     )
-
-    # X-axis styling
-    fig.update_xaxes(
-        showgrid=True,
-        gridcolor=LINE,
-        gridwidth=1,
-
-        zeroline=False,
-
-        showline=True,
-        linecolor=LINE,
-        linewidth=1,
-
-        tickfont=dict(
-            color=MUTED,
-            size=11
-        ),
-
-        title_font=dict(
-            color=MUTED,
-            size=11
-        )
-    )
-
-    # Y-axis styling
-    fig.update_yaxes(
-        showgrid=True,
-        gridcolor=LINE,
-        gridwidth=1,
-
-        zeroline=False,
-
-        showline=False,
-
-        tickfont=dict(
-            color=MUTED,
-            size=11
-        ),
-
-        title_font=dict(
-            color=MUTED,
-            size=11
-        )
-    )
-
+    fig.update_xaxes(gridcolor=LINE, zeroline=False, linecolor=LINE)
+    fig.update_yaxes(gridcolor=LINE, zeroline=False, linecolor=LINE)
     return fig
+
 
 def chart(fig, height=320, legend=True):
     st.plotly_chart(style_fig(fig, height, legend), use_container_width=True, config=PLOTLY_CONFIG)
@@ -308,31 +195,86 @@ def sample_data():
     return pd.DataFrame(rows, columns=REQUIRED)
 
 
+APP_DIR = Path(__file__).resolve().parent
+LOGISTICS_DEMO = APP_DIR / "Vikrant_Operations_Control_Tower_12000_Rows.xlsx"
+SERVICE_DEMO = APP_DIR / "Vikrant_Service_Operations_Demo_10000_Rows.xlsx"
+
+
+@st.cache_data(show_spinner=False)
+def load_excel_demo(path):
+    return pd.read_excel(path, sheet_name="Operations_Data")
+
+
 with st.sidebar:
     st.markdown("<p class='board-title'>Data source</p>", unsafe_allow_html=True)
-    uploaded = st.file_uploader("Upload operations CSV", type=["csv"], label_visibility="collapsed")
 
-if uploaded:
-    df = pd.read_csv(uploaded)
-    missing = [c for c in REQUIRED if c not in df.columns]
-    if missing:
-        st.error(
-            "This file is missing these columns: " + ", ".join(missing)
-            + ". Download the template below the tabs and match the headers."
+    data_source = st.radio(
+        "Choose data source",
+        [
+            "Logistics Operations Demo · 12,000 rows",
+            "Service Operations Demo · 10,000 rows",
+            "Upload Your Own Data",
+        ],
+        label_visibility="collapsed",
+    )
+
+    uploaded = None
+    if data_source == "Upload Your Own Data":
+        uploaded = st.file_uploader(
+            "Upload CSV or Excel",
+            type=["csv", "xlsx", "xls"],
+            help="Use the same required column names shown in the downloadable template.",
         )
-        st.stop()
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
-    for c in NUMERIC:
-        df[c] = pd.to_numeric(df[c], errors="coerce")
-    dropped = int(df["date"].isna().sum())
-    df = df.dropna(subset=["date"]).copy()
-    if df.empty:
-        st.error("No usable rows after reading the file. Check that the date column parses.")
-        st.stop()
-    if dropped:
-        st.warning(f"Skipped {dropped} row(s) with an unreadable date.")
+
+
+if data_source == "Logistics Operations Demo · 12,000 rows":
+    if LOGISTICS_DEMO.exists():
+        df = load_excel_demo(LOGISTICS_DEMO)
+        st.sidebar.caption("Built-in logistics demo loaded · 12,000 synthetic records")
+    else:
+        st.warning("The logistics demo workbook is missing. Falling back to the internal sample data.")
+        df = sample_data()
+
+elif data_source == "Service Operations Demo · 10,000 rows":
+    if SERVICE_DEMO.exists():
+        df = load_excel_demo(SERVICE_DEMO)
+        st.sidebar.caption("Built-in service-operations demo loaded · 10,000 synthetic records")
+    else:
+        st.warning("The service demo workbook is missing. Falling back to the internal sample data.")
+        df = sample_data()
+
 else:
-    df = sample_data()
+    if uploaded is None:
+        st.info("Upload a CSV or Excel file from the Data Source panel to analyze your own operation.")
+        st.stop()
+
+    if uploaded.name.lower().endswith(".csv"):
+        df = pd.read_csv(uploaded)
+    else:
+        df = pd.read_excel(uploaded)
+
+# Validate every source in the same way.
+missing = [c for c in REQUIRED if c not in df.columns]
+if missing:
+    st.error(
+        "This data source is missing these columns: " + ", ".join(missing)
+        + ". Download the template below the tabs and match the headers."
+    )
+    st.stop()
+
+df["date"] = pd.to_datetime(df["date"], errors="coerce")
+for c in NUMERIC:
+    df[c] = pd.to_numeric(df[c], errors="coerce")
+
+dropped = int(df["date"].isna().sum())
+df = df.dropna(subset=["date"]).copy()
+
+if df.empty:
+    st.error("No usable rows after reading the data. Check that the date column parses.")
+    st.stop()
+
+if dropped:
+    st.warning(f"Skipped {dropped} row(s) with an unreadable date.")
 
 # =============================================================
 # FILTERS
