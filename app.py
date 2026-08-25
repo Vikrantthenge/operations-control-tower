@@ -305,6 +305,13 @@ A live health check for day-to-day operations across multiple sites and vendors 
 - **Root cause** shows *why* — is it a specific site, a specific vendor, or just too much work coming in at once?
 - **Actions** turns all of that into a short, prioritized to-do list
 - **Data** is the underlying numbers, if you want to check or export them
+
+**What to actually look for**
+Numbers alone don't tell you much — here's what's worth paying attention to:
+- **Is service slipping?** One bad day is normal. SLA dropping several days in a row is a real signal.
+- **Is it a capacity problem, or something else?** If utilisation is high *and* SLA is dropping at the same time, it's simple — too much work, not enough capacity. If SLA drops while utilisation looks normal, the cause is somewhere else — process, staffing, or a specific vendor. The Root Cause tab exists to tell these two apart, because the fix is different either way.
+- **Is backlog a one-day blip, or a pattern?** Backlog that clears the next day is normal. Backlog that keeps climbing day after day is the one to worry about.
+- **Is one site or vendor the real problem?** An average can look fine while one location or vendor is quietly dragging it down. That's usually where the actual fix needs to happen — not a blanket change everywhere.
         """
     )
     if uploaded:
