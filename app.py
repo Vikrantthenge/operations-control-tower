@@ -282,33 +282,35 @@ st.caption(
     "recalculated live as you move the thresholds."
 )
 
-with st.expander("ℹ️ New here? Start with this — what this dashboard shows, in plain terms"):
+with st.expander("ℹ️ New here? Start with this — what this dashboard shows, in plain terms", expanded=True):
     st.markdown(
         """
 **What this is**
-A live health check for day-to-day operations across your sites and vendors — built to catch problems early, show why they're happening, and suggest what to do next.
+A live health check for day-to-day operations across multiple sites and vendors — built to catch problems early, show why they're happening, and suggest what to do next. You don't need any technical background to read it.
 
 **What the numbers mean**
 - **Volume** — how much work came in
 - **Capacity** — how much work could be handled
-- **SLA** — the percentage of work completed on time (your service target)
+- **SLA** — the percentage of work completed on time (the service target)
 - **Backlog** — work that's piled up and hasn't been cleared yet
-- **Utilisation** — how full each site is running (over 100% means it's overloaded)
+- **Utilisation** — how full a site is running (over 100% means it's overloaded)
 - **Cost / unit** — how much it costs, on average, to process one unit of work
 
 **What the colours mean**
 🟢 On track  ·  🟡 At risk — worth watching  ·  🔴 Critical — needs attention now
 
 **How to use it**
-- The **sidebar** lets you set what counts as "on time" or "too busy" for your business — move any slider and the whole board updates instantly
+- The **sidebar** on the left lets you adjust what counts as "on time" or "too busy" — move any slider and the whole board updates instantly
 - **Trends** shows how things have moved over time
 - **Root cause** shows *why* — is it a specific site, a specific vendor, or just too much work coming in at once?
 - **Actions** turns all of that into a short, prioritized to-do list
 - **Data** is the underlying numbers, if you want to check or export them
-
-No file uploaded? You're looking at sample data so you can explore the dashboard risk-free.
         """
     )
+    if uploaded:
+        st.caption("You're viewing the uploaded file's data.")
+    else:
+        st.caption("You're currently looking at sample data, so feel free to click around — nothing here is real or can be broken.")
 
 if f.empty:
     st.warning("Nothing matches these filters. Widen the date range or add a site back.")
