@@ -176,22 +176,27 @@ NUMERIC = ["volume", "capacity", "sla_pct", "backlog", "overtime_hours", "operat
 
 
 @st.cache_data
-def sample_data():
-    rng = np.random.default_rng(7)
-    days = pd.date_range("2026-08-01", periods=30, freq="D")
-    sites = ["Hub A", "Hub B", "Hub C"]
-    vendors = ["Vendor X", "Vendor Y", "Vendor Z"]
-    # Each site has its own character so the root-cause views show real signal.
-    profile = {
-        "Hub A": dict(vol=1250, cap=1300, sla=96.5),
-        "Hub B": dict(vol=1050, cap=1000, sla=92.0),
-        "Hub C": dict(vol=820, cap=980, sla=95.0),
+def generate_sample_data(target_rows, n_sites=10, n_vendors=5, seed=7):
+    rng = np.random.default_rng(seed)
+    days_needed = max(30, target_rows // n_sites + 1)
+    days = pd.date_range("2023-01-01", periods=days_needed, freq="D")
+    sites = [f"Hub {i + 1}" for i in range(n_sites)]
+    vendors = [f"Vendor {chr(65 + i)}" for i in range(n_vendors)]
+    # Each site gets its own deterministic character so root-cause views show real signal.
+    site_profiles = {
+        s: dict(
+            vol=600 + (i * 173) % 700,
+            cap=650 + (i * 211) % 750,
+            sla=90 + (i * 7) % 9,
+        )
+        for i, s in enumerate(sites)
     }
+
     rows = []
-    for i, d in enumerate(days):
+    for d in days:
         weekend = d.weekday() >= 5
-        for site in sites:
-            p = profile[site]
+        for i, site in enumerate(sites):
+            p = site_profiles[site]
             volume = int(p["vol"] * (0.85 if weekend else 1.0) * rng.normal(1, 0.09))
             capacity = int(p["cap"] * (0.8 if weekend else 1.0))
             strain = max(0.0, volume / max(capacity, 1) - 1)
@@ -199,18 +204,27 @@ def sample_data():
             backlog = max(0, int(volume - capacity + rng.normal(0, 60)))
             overtime = float(max(0, rng.normal(18, 7) + strain * 60))
             cost = volume * rng.uniform(52, 66) + overtime * 450
-            rows.append([
-                d, site, vendors[(i + sites.index(site)) % 3],
-                volume, capacity, sla, backlog, overtime, cost,
-            ])
-    return pd.DataFrame(rows, columns=REQUIRED)
+            vendor = vendors[(i + int(d.dayofyear)) % n_vendors]
+            rows.append([d, site, vendor, volume, capacity, sla, backlog, overtime, cost])
+        if len(rows) >= target_rows:
+            break
+
+    df = pd.DataFrame(rows, columns=REQUIRED)
+    return df.iloc[:target_rows].reset_index(drop=True)
 
 
 with st.sidebar:
     st.markdown("<p class='board-title'>Data source</p>", unsafe_allow_html=True)
-    uploaded = st.file_uploader("Upload operations CSV", type=["csv"], label_visibility="collapsed")
+    data_source = st.radio(
+        "Data source",
+        ["10K sample rows", "15K sample rows", "Upload your own CSV"],
+        label_visibility="collapsed",
+    )
+    uploaded = None
+    if data_source == "Upload your own CSV":
+        uploaded = st.file_uploader("Upload operations CSV", type=["csv"], label_visibility="collapsed")
 
-if uploaded:
+if data_source == "Upload your own CSV" and uploaded:
     df = pd.read_csv(uploaded)
     missing = [c for c in REQUIRED if c not in df.columns]
     if missing:
@@ -229,8 +243,12 @@ if uploaded:
         st.stop()
     if dropped:
         st.warning(f"Skipped {dropped} row(s) with an unreadable date.")
+elif data_source == "10K sample rows":
+    df = generate_sample_data(10_000)
+elif data_source == "15K sample rows":
+    df = generate_sample_data(15_000)
 else:
-    df = sample_data()
+    df = generate_sample_data(10_000)
 
 # =============================================================
 # FILTERS
@@ -312,10 +330,12 @@ Most ops teams only find out service is slipping when a customer complains or a 
 Sidebar sliders set your own targets — move one and the whole board updates. **Trends** = what happened over time. **Root cause** = why. **Actions** = what to do about it. **Data** = the raw numbers.
         """
     )
-    if uploaded:
-        st.caption("You're viewing the uploaded file's data.")
+    if data_source == "Upload your own CSV" and uploaded:
+        st.caption("You're viewing your uploaded file's data.")
+    elif data_source == "Upload your own CSV" and not uploaded:
+        st.caption("Upload a CSV above to see your own data — showing a 10K-row sample until you do.")
     else:
-        st.caption("You're currently looking at sample data, so feel free to click around — nothing here is real or can be broken.")
+        st.caption(f"You're currently looking at a synthetic {data_source.lower()}, so feel free to click around — nothing here is real or can be broken.")
 
 if f.empty:
     st.warning("Nothing matches these filters. Widen the date range or add a site back.")
