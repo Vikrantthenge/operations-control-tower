@@ -437,80 +437,97 @@ trend = (
 trend["cost_per_unit"] = trend["operating_cost"] / trend["volume"].replace(0, np.nan)
 
 with tab_trend:
-    c1, c2 = st.columns([1.3, 1])
+    view = st.radio(
+        "View", ["Full view", "One chart at a time"],
+        horizontal=True, key="trend_view", label_visibility="collapsed",
+    )
 
-    with c1:
-        fig = go.Figure()
-        fig.add_bar(
-            x=trend["date"], y=trend["volume"], name="Volume",
-            marker_color=CYAN, opacity=0.55,
-            hovertemplate="%{x|%d %b}<br>Volume %{y:,.0f}<extra></extra>",
-        )
-        fig.add_scatter(
-            x=trend["date"], y=trend["capacity"], name="Capacity", mode="lines",
-            line=dict(color=VIOLET, width=2.5, dash="dot"),
-            hovertemplate="%{x|%d %b}<br>Capacity %{y:,.0f}<extra></extra>",
-        )
-        fig.add_scatter(
-            x=trend["date"], y=trend["backlog"], name="Backlog", mode="lines",
-            line=dict(color=AMBER, width=2), fill="tozeroy",
-            fillcolor="rgba(251,191,36,0.14)", yaxis="y2",
-            hovertemplate="%{x|%d %b}<br>Backlog %{y:,.0f}<extra></extra>",
-        )
-        fig.update_layout(
-            title="Demand vs capacity, with backlog build-up",
-            yaxis2=dict(overlaying="y", side="right", showgrid=False, title="Backlog"),
-            hovermode="x unified",
-        )
-        chart(fig, 360)
+    fig_demand = go.Figure()
+    fig_demand.add_bar(
+        x=trend["date"], y=trend["volume"], name="Volume",
+        marker_color=CYAN, opacity=0.55,
+        hovertemplate="%{x|%d %b}<br>Volume %{y:,.0f}<extra></extra>",
+    )
+    fig_demand.add_scatter(
+        x=trend["date"], y=trend["capacity"], name="Capacity", mode="lines",
+        line=dict(color=VIOLET, width=2.5, dash="dot"),
+        hovertemplate="%{x|%d %b}<br>Capacity %{y:,.0f}<extra></extra>",
+    )
+    fig_demand.add_scatter(
+        x=trend["date"], y=trend["backlog"], name="Backlog", mode="lines",
+        line=dict(color=AMBER, width=2), fill="tozeroy",
+        fillcolor="rgba(251,191,36,0.14)", yaxis="y2",
+        hovertemplate="%{x|%d %b}<br>Backlog %{y:,.0f}<extra></extra>",
+    )
+    fig_demand.update_layout(
+        title="Demand vs capacity, with backlog build-up",
+        yaxis2=dict(overlaying="y", side="right", showgrid=False, title="Backlog"),
+        hovermode="x unified",
+    )
 
-        breach = trend[trend["sla_pct"] < sla_target]
-        fig = go.Figure()
-        fig.add_hrect(
-            y0=trend["sla_pct"].min() - 1, y1=sla_target,
-            fillcolor="rgba(251,113,133,0.10)", line_width=0,
-        )
-        fig.add_scatter(
-            x=trend["date"], y=trend["sla_pct"], name="SLA", mode="lines",
-            line=dict(color=LIME, width=2.5, shape="spline"),
-            hovertemplate="%{x|%d %b}<br>SLA %{y:.1f}%<extra></extra>",
-        )
-        fig.add_scatter(
-            x=breach["date"], y=breach["sla_pct"], name="Below target", mode="markers",
-            marker=dict(color=ROSE, size=9, line=dict(color=INK, width=1)),
-            hovertemplate="%{x|%d %b}<br>Missed target: %{y:.1f}%<extra></extra>",
-        )
-        fig.add_hline(
-            y=sla_target, line=dict(color=ROSE, width=1, dash="dash"),
-            annotation_text=f"target {sla_target:.1f}%", annotation_font_color=ROSE,
-        )
-        fig.update_layout(title="Service level against target", hovermode="x unified")
-        chart(fig, 300)
+    breach = trend[trend["sla_pct"] < sla_target]
+    fig_sla = go.Figure()
+    fig_sla.add_hrect(
+        y0=trend["sla_pct"].min() - 1, y1=sla_target,
+        fillcolor="rgba(251,113,133,0.10)", line_width=0,
+    )
+    fig_sla.add_scatter(
+        x=trend["date"], y=trend["sla_pct"], name="SLA", mode="lines",
+        line=dict(color=LIME, width=2.5, shape="spline"),
+        hovertemplate="%{x|%d %b}<br>SLA %{y:.1f}%<extra></extra>",
+    )
+    fig_sla.add_scatter(
+        x=breach["date"], y=breach["sla_pct"], name="Below target", mode="markers",
+        marker=dict(color=ROSE, size=9, line=dict(color=INK, width=1)),
+        hovertemplate="%{x|%d %b}<br>Missed target: %{y:.1f}%<extra></extra>",
+    )
+    fig_sla.add_hline(
+        y=sla_target, line=dict(color=ROSE, width=1, dash="dash"),
+        annotation_text=f"target {sla_target:.1f}%", annotation_font_color=ROSE,
+    )
+    fig_sla.update_layout(title="Service level against target", hovermode="x unified")
 
-    with c2:
-        pivot = f.pivot_table(index="site", columns="date", values="sla_pct", aggfunc="mean")
-        fig = px.imshow(
-            pivot.values,
-            x=[pd.Timestamp(c).strftime("%d %b") for c in pivot.columns],
-            y=pivot.index.tolist(),
-            color_continuous_scale=SLA_SCALE,
-            zmin=float(np.nanmin(pivot.values)), zmax=100,
-            aspect="auto", labels=dict(color="SLA %"),
-        )
-        fig.update_traces(hovertemplate="%{y} · %{x}<br>SLA %{z:.1f}%<extra></extra>")
-        fig.update_layout(title="Where service dipped, day by day", coloraxis_showscale=True)
-        chart(fig, 360, legend=False)
+    pivot = f.pivot_table(index="site", columns="date", values="sla_pct", aggfunc="mean")
+    fig_heatmap = px.imshow(
+        pivot.values,
+        x=[pd.Timestamp(c).strftime("%d %b") for c in pivot.columns],
+        y=pivot.index.tolist(),
+        color_continuous_scale=SLA_SCALE,
+        zmin=float(np.nanmin(pivot.values)), zmax=100,
+        aspect="auto", labels=dict(color="SLA %"),
+    )
+    fig_heatmap.update_traces(hovertemplate="%{y} · %{x}<br>SLA %{z:.1f}%<extra></extra>")
+    fig_heatmap.update_layout(title="Where service dipped, day by day", coloraxis_showscale=True)
 
-        fig = px.line(
-            f.groupby(["date", "site"], as_index=False).agg(
-                cost_per_unit=("cost_per_unit", "mean")
-            ),
-            x="date", y="cost_per_unit", color="site",
-            color_discrete_sequence=SITE_SEQ, markers=True,
-        )
-        fig.update_traces(hovertemplate="%{x|%d %b}<br>₹%{y:,.1f}<extra></extra>")
-        fig.update_layout(title="Cost per unit by site", yaxis_title="₹ / unit", xaxis_title="")
-        chart(fig, 300)
+    fig_cost = px.line(
+        f.groupby(["date", "site"], as_index=False).agg(cost_per_unit=("cost_per_unit", "mean")),
+        x="date", y="cost_per_unit", color="site",
+        color_discrete_sequence=SITE_SEQ, markers=True,
+    )
+    fig_cost.update_traces(hovertemplate="%{x|%d %b}<br>₹%{y:,.1f}<extra></extra>")
+    fig_cost.update_layout(title="Cost per unit by site", yaxis_title="₹ / unit", xaxis_title="")
+
+    trend_charts = [
+        ("Demand vs capacity, with backlog build-up", fig_demand, 360, True),
+        ("Service level against target", fig_sla, 300, True),
+        ("Where service dipped, day by day", fig_heatmap, 360, False),
+        ("Cost per unit by site", fig_cost, 300, True),
+    ]
+
+    if view == "Full view":
+        c1, c2 = st.columns([1.3, 1])
+        with c1:
+            chart(fig_demand, 360)
+            chart(fig_sla, 300)
+        with c2:
+            chart(fig_heatmap, 360, legend=False)
+            chart(fig_cost, 300)
+    else:
+        labels = [t[0] for t in trend_charts]
+        pick = st.selectbox("Choose a chart", labels, key="trend_chart_pick")
+        for label, fig, h, lg in trend_charts:
+            if label == pick:
+                chart(fig, h, lg)
 
 with tab_cause:
     site_perf = (
@@ -534,88 +551,114 @@ with tab_cause:
         .sort_values("avg_sla")
     )
 
-    c1, c2 = st.columns(2)
-    with c1:
-        fig = px.bar(
-            site_perf, x="avg_sla", y="site", orientation="h",
-            color="avg_sla", color_continuous_scale=SLA_SCALE,
-            range_color=(min(site_perf["avg_sla"].min(), sla_target - 6), 100),
-            text=site_perf["avg_sla"].map(lambda v: f"{v:.1f}%"),
-        )
-        fig.update_traces(
-            textposition="outside", textfont_color=TEXT,
-            hovertemplate="%{y}<br>Avg SLA %{x:.1f}%<extra></extra>",
-        )
-        fig.add_vline(x=sla_target, line_color=ROSE, line_width=1, line_dash="dash")
-        fig.update_layout(
-            title="Average SLA by site", coloraxis_showscale=False,
-            xaxis_title="", yaxis_title="",
-        )
-        chart(fig, 300, legend=False)
+    view = st.radio(
+        "View", ["Full view", "One chart at a time"],
+        horizontal=True, key="cause_view", label_visibility="collapsed",
+    )
 
-    with c2:
-        fig = px.bar(
-            vendor_perf, x="avg_sla", y="vendor", orientation="h",
-            color="avg_cost_per_unit", color_continuous_scale=["#1D4ED8", VIOLET, ROSE],
-            text=vendor_perf["avg_sla"].map(lambda v: f"{v:.1f}%"),
-            labels={"avg_cost_per_unit": "₹/unit"},
-        )
-        fig.update_traces(
-            textposition="outside", textfont_color=TEXT,
-            hovertemplate="%{y}<br>Avg SLA %{x:.1f}%<br>Cost ₹%{marker.color:,.1f}<extra></extra>",
-        )
-        fig.add_vline(x=sla_target, line_color=ROSE, line_width=1, line_dash="dash")
-        fig.update_layout(
-            title="Vendor SLA, shaded by cost per unit", xaxis_title="", yaxis_title=""
-        )
-        chart(fig, 300, legend=False)
+    fig_site = px.bar(
+        site_perf, x="avg_sla", y="site", orientation="h",
+        color="avg_sla", color_continuous_scale=SLA_SCALE,
+        range_color=(min(site_perf["avg_sla"].min(), sla_target - 6), 100),
+        text=site_perf["avg_sla"].map(lambda v: f"{v:.1f}%"),
+    )
+    fig_site.update_traces(
+        textposition="outside", textfont_color=TEXT,
+        hovertemplate="%{y}<br>Avg SLA %{x:.1f}%<extra></extra>",
+    )
+    fig_site.add_vline(x=sla_target, line_color=ROSE, line_width=1, line_dash="dash")
+    fig_site.update_layout(
+        title="Average SLA by site", coloraxis_showscale=False,
+        xaxis_title="", yaxis_title="",
+    )
 
-    c1, c2 = st.columns([1.15, 1])
-    with c1:
-        fig = px.scatter(
-            f, x="utilization_pct", y="sla_pct", color="site", size="volume",
-            color_discrete_sequence=SITE_SEQ, size_max=20, opacity=0.8,
-            hover_data={"date": "|%d %b", "backlog": ":,.0f", "volume": ":,.0f"},
-        )
-        fig.add_vline(x=util_limit, line_color=VIOLET, line_width=1, line_dash="dash")
-        fig.add_hline(y=sla_target, line_color=ROSE, line_width=1, line_dash="dash")
-        fig.update_layout(
-            title="Does load explain the misses? Each dot is one site-day",
-            xaxis_title="Utilisation %", yaxis_title="SLA %",
-        )
-        chart(fig, 380)
+    fig_vendor = px.bar(
+        vendor_perf, x="avg_sla", y="vendor", orientation="h",
+        color="avg_cost_per_unit", color_continuous_scale=["#1D4ED8", VIOLET, ROSE],
+        text=vendor_perf["avg_sla"].map(lambda v: f"{v:.1f}%"),
+        labels={"avg_cost_per_unit": "₹/unit"},
+    )
+    fig_vendor.update_traces(
+        textposition="outside", textfont_color=TEXT,
+        hovertemplate="%{y}<br>Avg SLA %{x:.1f}%<br>Cost ₹%{marker.color:,.1f}<extra></extra>",
+    )
+    fig_vendor.add_vline(x=sla_target, line_color=ROSE, line_width=1, line_dash="dash")
+    fig_vendor.update_layout(
+        title="Vendor SLA, shaded by cost per unit", xaxis_title="", yaxis_title=""
+    )
 
-        corr = f[["utilization_pct", "sla_pct"]].dropna()
-        if len(corr) > 2:
-            r = corr["utilization_pct"].corr(corr["sla_pct"])
-            verdict = (
-                "load is the main driver" if r < -0.4
-                else "load explains part of it" if r < -0.15
-                else "load is not the driver — look at process or vendor"
-            )
-            st.caption(f"Utilisation vs SLA correlation: **{r:+.2f}** — {verdict}.")
+    fig_scatter = px.scatter(
+        f, x="utilization_pct", y="sla_pct", color="site", size="volume",
+        color_discrete_sequence=SITE_SEQ, size_max=20, opacity=0.8,
+        hover_data={"date": "|%d %b", "backlog": ":,.0f", "volume": ":,.0f"},
+    )
+    fig_scatter.add_vline(x=util_limit, line_color=VIOLET, line_width=1, line_dash="dash")
+    fig_scatter.add_hline(y=sla_target, line_color=ROSE, line_width=1, line_dash="dash")
+    fig_scatter.update_layout(
+        title="Does load explain the misses? Each dot is one site-day",
+        xaxis_title="Utilisation %", yaxis_title="SLA %",
+    )
 
-    with c2:
-        tm = (
-            f.groupby(["site", "vendor"], as_index=False)
-            .agg(backlog=("backlog", "sum"), avg_sla=("sla_pct", "mean"))
+    corr = f[["utilization_pct", "sla_pct"]].dropna()
+    corr_caption = None
+    if len(corr) > 2:
+        r = corr["utilization_pct"].corr(corr["sla_pct"])
+        verdict = (
+            "load is the main driver" if r < -0.4
+            else "load explains part of it" if r < -0.15
+            else "load is not the driver — look at process or vendor"
         )
-        tm = tm[tm["backlog"] > 0]
-        if tm.empty:
-            st.info("No backlog recorded in this selection.")
-        else:
-            fig = px.treemap(
-                tm, path=[px.Constant("All sites"), "site", "vendor"],
-                values="backlog", color="avg_sla",
-                color_continuous_scale=SLA_SCALE,
-                range_color=(tm["avg_sla"].min(), 100),
-            )
-            fig.update_traces(
-                marker_line_color=INK, marker_line_width=2,
-                hovertemplate="%{label}<br>Backlog %{value:,.0f}<br>Avg SLA %{color:.1f}%<extra></extra>",
-            )
-            fig.update_layout(title="Where the backlog sits — size is volume, colour is SLA")
-            chart(fig, 380, legend=False)
+        corr_caption = f"Utilisation vs SLA correlation: **{r:+.2f}** — {verdict}."
+
+    tm = (
+        f.groupby(["site", "vendor"], as_index=False)
+        .agg(backlog=("backlog", "sum"), avg_sla=("sla_pct", "mean"))
+    )
+    tm = tm[tm["backlog"] > 0]
+    fig_treemap = None
+    if not tm.empty:
+        fig_treemap = px.treemap(
+            tm, path=[px.Constant("All sites"), "site", "vendor"],
+            values="backlog", color="avg_sla",
+            color_continuous_scale=SLA_SCALE,
+            range_color=(tm["avg_sla"].min(), 100),
+        )
+        fig_treemap.update_traces(
+            marker_line_color=INK, marker_line_width=2,
+            hovertemplate="%{label}<br>Backlog %{value:,.0f}<br>Avg SLA %{color:.1f}%<extra></extra>",
+        )
+        fig_treemap.update_layout(title="Where the backlog sits — size is volume, colour is SLA")
+
+    cause_charts = [("Average SLA by site", fig_site, 300, False), ("Vendor SLA, shaded by cost per unit", fig_vendor, 300, False),
+                     ("Does load explain the misses?", fig_scatter, 380, True)]
+    if fig_treemap is not None:
+        cause_charts.append(("Where the backlog sits", fig_treemap, 380, False))
+
+    if view == "Full view":
+        c1, c2 = st.columns(2)
+        with c1:
+            chart(fig_site, 300, legend=False)
+        with c2:
+            chart(fig_vendor, 300, legend=False)
+
+        c1, c2 = st.columns([1.15, 1])
+        with c1:
+            chart(fig_scatter, 380)
+            if corr_caption:
+                st.caption(corr_caption)
+        with c2:
+            if fig_treemap is not None:
+                chart(fig_treemap, 380, legend=False)
+            else:
+                st.info("No backlog recorded in this selection.")
+    else:
+        labels = [c[0] for c in cause_charts]
+        pick = st.selectbox("Choose a chart", labels, key="cause_chart_pick")
+        for label, fig, h, lg in cause_charts:
+            if label == pick:
+                chart(fig, h, lg)
+                if label == "Does load explain the misses?" and corr_caption:
+                    st.caption(corr_caption)
 
     st.markdown("<p class='board-title'>Site detail</p>", unsafe_allow_html=True)
     st.dataframe(
