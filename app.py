@@ -3,7 +3,6 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-from pathlib import Path
 
 st.set_page_config(
     page_title="Operations Intelligence Control Tower",
@@ -15,11 +14,11 @@ st.set_page_config(
 # =============================================================
 # THEME
 # =============================================================
-INK = "#FFFFFF"
-SURFACE = "#FFFFFF"
-LINE = "#D9E2EC"
-TEXT = "#0B1220"
-MUTED = "#5B6B82"
+INK = "#0B1220"
+SURFACE = "#131C2E"
+LINE = "#22304A"
+TEXT = "#E6EDF7"
+MUTED = "#8CA0BF"
 
 CYAN = "#22D3EE"
 LIME = "#A3E635"
@@ -45,51 +44,44 @@ st.markdown(
     html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
     .stApp, body, .main {
-        background-color: #FFFFFF;
-        color: #0B1220;
+        background-color: #0B1220;
+        color: #E6EDF7;
     }
 
     .block-container { padding-top: 2.2rem; max-width: 1500px; }
 
-    [data-testid="stSidebar"] {
-        background-color: #F7F9FC;
-        color: #0B1220;
-    }
-
-    [data-testid="stSidebar"] * { color: #0B1220; }
-
     .board-title {
         font-family: 'JetBrains Mono', monospace;
         font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
-        color: #5B6B82; margin: 0 0 10px 2px;
+        color: #8CA0BF; margin: 0 0 10px 2px;
     }
 
     /* KPI tiles */
     .kpi {
-        background: #FFFFFF;
-        border: 1px solid #D9E2EC; border-left: 3px solid var(--accent);
+        background: linear-gradient(160deg, #131C2E 0%, #0E1626 100%);
+        border: 1px solid #22304A; border-left: 3px solid var(--accent);
         border-radius: 10px; padding: 14px 16px; height: 116px;
     }
     .kpi-label {
         font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
-        letter-spacing: .16em; text-transform: uppercase; color: #5B6B82;
+        letter-spacing: .16em; text-transform: uppercase; color: #8CA0BF;
     }
     .kpi-value {
         font-family: 'JetBrains Mono', monospace; font-weight: 700;
-        font-size: 30px; line-height: 1.25; color: #0B1220; margin-top: 4px;
+        font-size: 30px; line-height: 1.25; color: #E6EDF7; margin-top: 4px;
     }
     .kpi-delta { font-size: 12px; font-weight: 500; margin-top: 2px; }
 
     /* Site status board — one row per site */
     .row {
         display: flex; align-items: center; gap: 14px;
-        background: #131C2E; border: 1px solid #D9E2EC;
+        background: #131C2E; border: 1px solid #22304A;
         border-left: 4px solid var(--accent);
         border-radius: 8px; padding: 11px 16px; margin-bottom: 8px;
     }
     .row-site {
         font-family: 'JetBrains Mono', monospace; font-weight: 700;
-        font-size: 15px; color: #0B1220; min-width: 110px;
+        font-size: 15px; color: #E6EDF7; min-width: 110px;
     }
     .chip {
         font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
@@ -97,18 +89,22 @@ st.markdown(
         background: color-mix(in srgb, var(--accent) 18%, transparent);
         color: var(--accent); border: 1px solid var(--accent); white-space: nowrap;
     }
-    .row-metric { font-size: 12.5px; color: #5B6B82; min-width: 128px; }
+    .row-metric { font-size: 12.5px; color: #8CA0BF; min-width: 128px; }
     .row-metric b {
-        font-family: 'JetBrains Mono', monospace; color: #0B1220;
+        font-family: 'JetBrains Mono', monospace; color: #E6EDF7;
         font-size: 14px; margin-left: 5px;
     }
     .bar-track {
         flex: 1; height: 8px; border-radius: 999px;
-        background: #E9EEF5; overflow: hidden; min-width: 90px;
+        background: #1D2942; overflow: hidden; min-width: 90px;
     }
     .bar-fill { height: 8px; border-radius: 999px; background: var(--accent); }
 
     div[data-testid="stMetricValue"] { font-family: 'JetBrains Mono', monospace; }
+
+    div[data-testid="stPlotlyChart"], div[data-testid="stPlotlyChart"] > div, iframe {
+        background-color: #0B1220 !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -118,14 +114,14 @@ st.markdown(
 def style_fig(fig, height=320, legend=True):
     fig.update_layout(
         height=height,
-        margin=dict(l=10, r=10, t=34, b=10),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=10, r=10, t=64, b=10),
+        paper_bgcolor=INK,
+        plot_bgcolor=INK,
         font=dict(family="Inter, sans-serif", color=TEXT, size=12),
-        title=dict(font=dict(size=13, color=MUTED)),
+        title=dict(font=dict(size=13, color=MUTED), y=0.97, yanchor="top", x=0, xanchor="left"),
         hoverlabel=dict(bgcolor=SURFACE, bordercolor=LINE, font_size=12),
         showlegend=legend,
-        legend=dict(orientation="h", y=1.14, x=0, title_text=""),
+        legend=dict(orientation="h", y=1.10, yanchor="bottom", x=0, title_text=""),
     )
     fig.update_xaxes(gridcolor=LINE, zeroline=False, linecolor=LINE)
     fig.update_yaxes(gridcolor=LINE, zeroline=False, linecolor=LINE)
@@ -195,86 +191,31 @@ def sample_data():
     return pd.DataFrame(rows, columns=REQUIRED)
 
 
-APP_DIR = Path(__file__).resolve().parent
-LOGISTICS_DEMO = APP_DIR / "sample.xlsx"
-SERVICE_DEMO = APP_DIR / "sample 2.xlsx"
-
-
-@st.cache_data(show_spinner=False)
-def load_excel_demo(path):
-    return pd.read_excel(path, sheet_name="Operations_Data")
-
-
 with st.sidebar:
     st.markdown("<p class='board-title'>Data source</p>", unsafe_allow_html=True)
+    uploaded = st.file_uploader("Upload operations CSV", type=["csv"], label_visibility="collapsed")
 
-    data_source = st.radio(
-        "Choose data source",
-        [
-            "Logistics Operations Demo · 12,000 rows",
-            "Service Operations Demo · 10,000 rows",
-            "Upload Your Own Data",
-        ],
-        label_visibility="collapsed",
-    )
-
-    uploaded = None
-    if data_source == "Upload Your Own Data":
-        uploaded = st.file_uploader(
-            "Upload CSV or Excel",
-            type=["csv", "xlsx", "xls"],
-            help="Use the same required column names shown in the downloadable template.",
+if uploaded:
+    df = pd.read_csv(uploaded)
+    missing = [c for c in REQUIRED if c not in df.columns]
+    if missing:
+        st.error(
+            "This file is missing these columns: " + ", ".join(missing)
+            + ". Download the template below the tabs and match the headers."
         )
-
-
-if data_source == "Logistics Operations Demo · 12,000 rows":
-    if LOGISTICS_DEMO.exists():
-        df = load_excel_demo(LOGISTICS_DEMO)
-        st.sidebar.caption("Built-in logistics demo loaded · 12,000 synthetic records")
-    else:
-        st.warning("The logistics demo workbook is missing. Falling back to the internal sample data.")
-        df = sample_data()
-
-elif data_source == "Service Operations Demo · 10,000 rows":
-    if SERVICE_DEMO.exists():
-        df = load_excel_demo(SERVICE_DEMO)
-        st.sidebar.caption("Built-in service-operations demo loaded · 10,000 synthetic records")
-    else:
-        st.warning("The service demo workbook is missing. Falling back to the internal sample data.")
-        df = sample_data()
-
-else:
-    if uploaded is None:
-        st.info("Upload a CSV or Excel file from the Data Source panel to analyze your own operation.")
         st.stop()
-
-    if uploaded.name.lower().endswith(".csv"):
-        df = pd.read_csv(uploaded)
-    else:
-        df = pd.read_excel(uploaded)
-
-# Validate every source in the same way.
-missing = [c for c in REQUIRED if c not in df.columns]
-if missing:
-    st.error(
-        "This data source is missing these columns: " + ", ".join(missing)
-        + ". Download the template below the tabs and match the headers."
-    )
-    st.stop()
-
-df["date"] = pd.to_datetime(df["date"], errors="coerce")
-for c in NUMERIC:
-    df[c] = pd.to_numeric(df[c], errors="coerce")
-
-dropped = int(df["date"].isna().sum())
-df = df.dropna(subset=["date"]).copy()
-
-if df.empty:
-    st.error("No usable rows after reading the data. Check that the date column parses.")
-    st.stop()
-
-if dropped:
-    st.warning(f"Skipped {dropped} row(s) with an unreadable date.")
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    for c in NUMERIC:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+    dropped = int(df["date"].isna().sum())
+    df = df.dropna(subset=["date"]).copy()
+    if df.empty:
+        st.error("No usable rows after reading the file. Check that the date column parses.")
+        st.stop()
+    if dropped:
+        st.warning(f"Skipped {dropped} row(s) with an unreadable date.")
+else:
+    df = sample_data()
 
 # =============================================================
 # FILTERS
