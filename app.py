@@ -256,9 +256,10 @@ f = df.loc[mask].copy()
 
 st.title("Operations Intelligence Control Tower")
 st.caption(
-    "Live visibility, exceptions, root-cause signals and recommended actions "
-    "for high-volume operations. Every threshold on the left is live — move it "
-    "and the whole board recalculates."
+    "Most ops dashboards show you what happened. This one tells you what's "
+    "about to break and what to do about it — SLA and capacity exceptions, "
+    "root-cause signals by site and vendor, and prioritized actions, "
+    "recalculated live as you move the thresholds."
 )
 
 if f.empty:
