@@ -285,33 +285,31 @@ st.caption(
 with st.expander("ℹ️ New here? Start with this — what this dashboard shows, in plain terms", expanded=True):
     st.markdown(
         """
-**What this is**
-A live health check for day-to-day operations across multiple sites and vendors — built to catch problems early, show why they're happening, and suggest what to do next. You don't need any technical background to read it.
+**The problem**
+Most ops teams only find out service is slipping when a customer complains or a monthly report lands — by then, the damage is already done, and there's no way to tell *why* it happened without digging through spreadsheets. This dashboard closes that gap: it flags problems the same day they start, and points at the cause, not just the symptom.
 
 **What the numbers mean**
 - **Volume** — how much work came in
 - **Capacity** — how much work could be handled
-- **SLA** — the percentage of work completed on time (the service target)
+- **SLA** — the percentage of work completed on time
 - **Backlog** — work that's piled up and hasn't been cleared yet
-- **Utilisation** — how full a site is running (over 100% means it's overloaded)
-- **Cost / unit** — how much it costs, on average, to process one unit of work
+- **Utilisation** — how full a site is running (over 100% means overloaded)
+- **Cost / unit** — the average cost to process one unit of work
 
 **What the colours mean**
 🟢 On track  ·  🟡 At risk — worth watching  ·  🔴 Critical — needs attention now
 
-**How to use it**
-- The **sidebar** on the left lets you adjust what counts as "on time" or "too busy" — move any slider and the whole board updates instantly
-- **Trends** shows how things have moved over time
-- **Root cause** shows *why* — is it a specific site, a specific vendor, or just too much work coming in at once?
-- **Actions** turns all of that into a short, prioritized to-do list
-- **Data** is the underlying numbers, if you want to check or export them
+**What each chart tells you**
+- **Demand vs Capacity** — is the problem too much work, or not enough capacity?
+- **SLA vs Target** — exactly which days service missed the mark
+- **SLA Heatmap** — which site is the repeat offender, at a glance
+- **Cost per Site** — is running the operation getting cheaper or more expensive?
+- **SLA by Site / by Vendor** — ranks the worst performers first, so you know where to look
+- **Utilisation vs SLA** — tells you if misses are caused by being overloaded, or by something else entirely (staffing, process, a weak vendor)
+- **Backlog Map** — shows exactly where unfinished work is piling up
 
-**What to actually look for**
-Numbers alone don't tell you much — here's what's worth paying attention to:
-- **Is service slipping?** One bad day is normal. SLA dropping several days in a row is a real signal.
-- **Is it a capacity problem, or something else?** If utilisation is high *and* SLA is dropping at the same time, it's simple — too much work, not enough capacity. If SLA drops while utilisation looks normal, the cause is somewhere else — process, staffing, or a specific vendor. The Root Cause tab exists to tell these two apart, because the fix is different either way.
-- **Is backlog a one-day blip, or a pattern?** Backlog that clears the next day is normal. Backlog that keeps climbing day after day is the one to worry about.
-- **Is one site or vendor the real problem?** An average can look fine while one location or vendor is quietly dragging it down. That's usually where the actual fix needs to happen — not a blanket change everywhere.
+**Getting around**
+Sidebar sliders set your own targets — move one and the whole board updates. **Trends** = what happened over time. **Root cause** = why. **Actions** = what to do about it. **Data** = the raw numbers.
         """
     )
     if uploaded:
