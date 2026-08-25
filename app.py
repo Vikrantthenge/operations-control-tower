@@ -100,6 +100,26 @@ st.markdown(
     div[data-testid="stPlotlyChart"], div[data-testid="stPlotlyChart"] > div, iframe {
         background-color: #0B1220 !important;
     }
+
+    /* Tablet and below */
+    @media (max-width: 900px) {
+        .block-container { padding-left: 1rem; padding-right: 1rem; padding-top: 1.4rem; }
+        .kpi { height: auto; padding: 12px 14px; }
+        .kpi-value { font-size: 24px; }
+        .row { flex-wrap: wrap; row-gap: 8px; }
+        .row-metric { min-width: 42%; }
+    }
+
+    /* Phone */
+    @media (max-width: 520px) {
+        .block-container { padding-left: 0.6rem; padding-right: 0.6rem; }
+        .row-site { min-width: 100%; margin-bottom: 4px; }
+        .row-metric { min-width: 100%; }
+        .bar-track { min-width: 100%; }
+        .kpi-label { font-size: 9.5px; }
+        .kpi-value { font-size: 21px; }
+        .board-title { font-size: 10.5px; }
+    }
     </style>
     """,
     unsafe_allow_html=True,
